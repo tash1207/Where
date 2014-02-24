@@ -21,7 +21,8 @@
             android:background="@drawable/button_style"
             android:text="@string/find_bike"
             android:textColor="#121212"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:onClick="findBike" />
 
         <Button
             android:layout_width="0dp"
@@ -30,7 +31,8 @@
             android:background="@drawable/button_style"
             android:text="@string/find_car"
             android:textColor="#121212"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:onClick="findCar" />
 
         <Button
             android:layout_width="0dp"
