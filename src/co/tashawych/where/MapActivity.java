@@ -56,18 +56,50 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 		super.onStop();
 	}
 	
-	// Center the camera on the bike
+	/**
+	 * Center the camera on the bike
+	 * @param v
+	 */
 	public void findBike(View v) {
 		map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bikeLat, bikeLng), 16));
 		bikeMarker.showInfoWindow();
 	}
 	
-	// Center the camera on the car
+	/**
+	 * Center the camera on the car
+	 * @param v
+	 */
 	public void findCar(View v) {
 		map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(carLat, carLng), 16));
 		carMarker.showInfoWindow();
 	}
 	
+	/**
+	 * Place the bike marker at the user's current location
+	 * @param v
+	 */
+	public void placeBike(View v) {
+		bikeLat = map.getMyLocation().getLatitude();
+		bikeLng = map.getMyLocation().getLongitude();
+		saveDouble("bikeLat", bikeLat);
+		saveDouble("bikeLng", bikeLng);
+		bikeMarker.setPosition(new LatLng(bikeLat, bikeLng));
+		bikeMarker.showInfoWindow();
+	}
+
+	/**
+	 * Place the car marker at the user's current location
+	 * @param v
+	 */
+	public void placeCar(View v) {
+		carLat = map.getMyLocation().getLatitude();
+		carLng = map.getMyLocation().getLongitude();
+		saveDouble("carLat", carLat);
+		saveDouble("carLng", carLng);
+		carMarker.setPosition(new LatLng(carLat, carLng));
+		carMarker.showInfoWindow();
+	}
+
 	public void mapSetup() {
 	    final double latitude = currentLocation.getLatitude();
 	    final double longitude = currentLocation.getLongitude();

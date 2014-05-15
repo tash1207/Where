@@ -3,9 +3,10 @@
 
     <string name="app_name">Where?</string>
     <string name="action_settings">Settings</string>
-    
     <string name="find_bike">Find Bike</string>
     <string name="find_car">Find Car</string>
     <string name="add_note">Add Note</string>
+    <string name="place_bike">Place Bike Here</string>
+    <string name="place_car">Place Car Here</string>
 
 </resources>

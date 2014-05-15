@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,32 +7,32 @@
     tools:context=".MapActivity" >
 
     <LinearLayout
-        android:id="@+id/buttons"
+        android:id="@+id/top_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:splitMotionEvents="false"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:splitMotionEvents="false" >
 
         <Button
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:background="@drawable/button_style"
+            android:onClick="findBike"
             android:text="@string/find_bike"
             android:textColor="#121212"
-            android:textSize="15sp"
-            android:onClick="findBike" />
+            android:textSize="15sp" />
 
         <Button
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:background="@drawable/button_style"
+            android:onClick="findCar"
             android:text="@string/find_car"
             android:textColor="#121212"
-            android:textSize="15sp"
-            android:onClick="findCar" />
+            android:textSize="15sp" />
 
         <Button
             android:layout_width="0dp"
@@ -50,10 +50,40 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/buttons"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         map:cameraTargetLat="29.652"
         map:cameraTargetLng="-82.325"
         map:cameraZoom="16" />
 
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/btm_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:splitMotionEvents="false" >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_style"
+            android:onClick="placeBike"
+            android:text="@string/place_bike"
+            android:textColor="#121212"
+            android:textSize="15sp" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_style"
+            android:onClick="placeCar"
+            android:text="@string/place_car"
+            android:textColor="#121212"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
