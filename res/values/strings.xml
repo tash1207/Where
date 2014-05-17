@@ -9,4 +9,9 @@
     <string name="place_bike">Place Bike Here</string>
     <string name="place_car">Place Car Here</string>
 
+    <string name="bike_note">Bike Note</string>
+    <string name="car_note">Car Note</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

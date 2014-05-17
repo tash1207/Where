@@ -1,11 +1,17 @@
 package co.tashawych.where;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -30,6 +36,7 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	
 	SharedPreferences prefs;
 	double bikeLat, bikeLng, carLat, carLng;
+	String bikeNote, carNote;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +94,11 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 		bikeMarker.showInfoWindow();
 	}
 
+	public void addNote(View v) {
+		DialogFragment addNoteFragment = new AddNoteFragment();
+		addNoteFragment.show(getFragmentManager(), "addNote");
+	}
+
 	/**
 	 * Place the car marker at the user's current location
 	 * @param v
@@ -115,26 +127,29 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 		carLat = getDouble("carLat", latitude);
 		carLng = getDouble("carLng", longitude + 0.001);
 
-	    // Add a marker to the bike's location
+		bikeNote = prefs.getString("bikeNote", "");
+		carNote = prefs.getString("carNote", "");
+
+		// Add a marker to the bike's location
 	    if (bikeMarker == null) {
-	    	bikeMarker = map.addMarker(new MarkerOptions()
-	    		.position(new LatLng(bikeLat, bikeLng))
-	    		.title("Bike")
-	    		.snippet("Arlington Apartments")
-	    		.draggable(true)
-	    		.icon(BitmapDescriptorFactory.fromResource(R.drawable.bicycle)));
+			bikeMarker = map.addMarker(new MarkerOptions()
+					.position(new LatLng(bikeLat, bikeLng))
+					.title("Bike")
+					.snippet(bikeNote)
+					.draggable(true)
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.bicycle)));
 	    }
 	    bikeMarker.showInfoWindow();
 	    
-	    // Add a marker to the car's location
-	    if (carMarker == null) {
-	    	carMarker = map.addMarker(new MarkerOptions()
-	    		.position(new LatLng(carLat, carLng))
-	    		.title("Car")
-	    		.snippet("The Palms")
-	    		.draggable(true)
-	    		.icon(BitmapDescriptorFactory.fromResource(R.drawable.car)));
-	    }
+		// Add a marker to the car's location
+		if (carMarker == null) {
+			carMarker = map.addMarker(new MarkerOptions()
+					.position(new LatLng(carLat, carLng))
+					.title("Car")
+					.snippet(carNote)
+					.draggable(true)
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.car)));
+		}
 	}
 	
 	public GoogleMap.OnMarkerDragListener getOnMarkerDragListener() {
@@ -197,6 +212,47 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	@Override
 	public void onDisconnected() {
 		
+	}
+
+	public class AddNoteFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the Builder class for convenient dialog construction
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		    // Get the layout inflater
+		    LayoutInflater inflater = getActivity().getLayoutInflater();
+		    // Inflate and set the layout for the dialog
+		    // Pass null as the parent view because its going in the dialog layout
+		    final View view = inflater.inflate(R.layout.dialog_add_note, null);
+
+		    final EditText edit_bike_note = (EditText) view.findViewById(R.id.edit_bike_note);
+			final EditText edit_car_note = (EditText) view.findViewById(R.id.edit_car_note);
+			edit_bike_note.setText(prefs.getString("bikeNote", ""));
+			edit_car_note.setText(prefs.getString("carNote", ""));
+
+			builder.setView(view)
+					.setPositiveButton(R.string.submit,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									// Save changes to marker snippets
+									SharedPreferences.Editor edit = prefs.edit();
+									edit.putString("bikeNote", edit_bike_note.getText().toString());
+									edit.putString("carNote", edit_car_note.getText().toString());
+									edit.commit();
+
+									bikeMarker.setSnippet(edit_bike_note.getText().toString());
+									carMarker.setSnippet(edit_car_note.getText().toString());
+								}
+							})
+					.setNegativeButton(R.string.cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									// User cancelled the dialog
+								}
+							});
+			// Create the AlertDialog object and return it
+			return builder.create();
+		}
 	}
 
 }
