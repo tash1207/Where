@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
@@ -95,6 +94,8 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	}
 
 	public void addNote(View v) {
+		bikeMarker.hideInfoWindow();
+		carMarker.hideInfoWindow();
 		DialogFragment addNoteFragment = new AddNoteFragment();
 		addNoteFragment.show(getFragmentManager(), "addNote");
 	}
@@ -190,14 +191,14 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	public void saveDouble(String name, double value) {
 		prefs.edit().putLong(name, Double.doubleToLongBits(value)).commit();
 	}
-
+/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.map, menu);
 		return true;
 	}
-	
+*/
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		currentLocation = locationClient.getLastLocation();
