@@ -79,20 +79,11 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 		map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(carLat, carLng), 16));
 		carMarker.showInfoWindow();
 	}
-	
+
 	/**
-	 * Place the bike marker at the user's current location
+	 * Open a dialog to add a note about the bike and/or car's location
 	 * @param v
 	 */
-	public void placeBike(View v) {
-		bikeLat = map.getMyLocation().getLatitude();
-		bikeLng = map.getMyLocation().getLongitude();
-		saveDouble("bikeLat", bikeLat);
-		saveDouble("bikeLng", bikeLng);
-		bikeMarker.setPosition(new LatLng(bikeLat, bikeLng));
-		bikeMarker.showInfoWindow();
-	}
-
 	public void addNote(View v) {
 		bikeMarker.hideInfoWindow();
 		carMarker.hideInfoWindow();
@@ -101,15 +92,42 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	}
 
 	/**
+	 * Place the bike marker at the user's current location
+	 * @param v
+	 */
+	public void placeBike(View v) {
+		// Set new location
+		bikeLat = map.getMyLocation().getLatitude();
+		bikeLng = map.getMyLocation().getLongitude();
+		saveDouble("bikeLat", bikeLat);
+		saveDouble("bikeLng", bikeLng);
+		bikeMarker.setPosition(new LatLng(bikeLat, bikeLng));
+
+		// Add * to note to denote that location has changed
+		bikeNote = prefs.getString("bikeNote", "");
+		if (!bikeNote.endsWith("*")) {
+			saveBikeNote(bikeNote + "*");
+		}
+		bikeMarker.showInfoWindow();
+	}
+
+	/**
 	 * Place the car marker at the user's current location
 	 * @param v
 	 */
 	public void placeCar(View v) {
+		// Set new location
 		carLat = map.getMyLocation().getLatitude();
 		carLng = map.getMyLocation().getLongitude();
 		saveDouble("carLat", carLat);
 		saveDouble("carLng", carLng);
 		carMarker.setPosition(new LatLng(carLat, carLng));
+
+		// Add * to note to denote that location has changed
+		carNote = prefs.getString("carNote", "");
+		if (!carNote.endsWith("*")) {
+			saveCarNote(carNote + "*");
+		}
 		carMarker.showInfoWindow();
 	}
 
@@ -191,14 +209,21 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	public void saveDouble(String name, double value) {
 		prefs.edit().putLong(name, Double.doubleToLongBits(value)).commit();
 	}
-/*
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.map, menu);
-		return true;
+
+	public void saveBikeNote(String note) {
+		SharedPreferences.Editor edit = prefs.edit();
+		edit.putString("bikeNote", note);
+		edit.commit();
+		bikeMarker.setSnippet(note);
 	}
-*/
+
+	public void saveCarNote(String note) {
+		SharedPreferences.Editor edit = prefs.edit();
+		edit.putString("carNote", note);
+		edit.commit();
+		carMarker.setSnippet(note);
+	}
+
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		currentLocation = locationClient.getLastLocation();
@@ -236,13 +261,8 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
 									// Save changes to marker snippets
-									SharedPreferences.Editor edit = prefs.edit();
-									edit.putString("bikeNote", edit_bike_note.getText().toString());
-									edit.putString("carNote", edit_car_note.getText().toString());
-									edit.commit();
-
-									bikeMarker.setSnippet(edit_bike_note.getText().toString());
-									carMarker.setSnippet(edit_car_note.getText().toString());
+									saveBikeNote(edit_bike_note.getText().toString());
+									saveCarNote(edit_car_note.getText().toString());
 								}
 							})
 					.setNegativeButton(R.string.cancel,
