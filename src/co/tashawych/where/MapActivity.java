@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -54,6 +55,11 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	public void onStart() {
 		super.onStart();
 		locationClient.connect();
+
+		if (prefs.getString("carIcon", "").equals("")) {
+			DialogFragment pickCarFragment = new PickCarFragment();
+			pickCarFragment.show(getFragmentManager(), "pickCar");
+		}
 	}
 	
 	@Override
@@ -162,12 +168,14 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 	    
 		// Add a marker to the car's location
 		if (carMarker == null) {
+			// Check if user selected Scion or Subaru icon
+			boolean scion = prefs.getString("carIcon", "scion").equals("scion");
 			carMarker = map.addMarker(new MarkerOptions()
 					.position(new LatLng(carLat, carLng))
 					.title("Car")
 					.snippet(carNote)
 					.draggable(true)
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.car)));
+					.icon(BitmapDescriptorFactory.fromResource((scion) ? R.drawable.car : R.drawable.subaru)));
 		}
 	}
 	
@@ -271,6 +279,46 @@ public class MapActivity extends Activity implements GooglePlayServicesClient.Co
 									// User cancelled the dialog
 								}
 							});
+			// Create the AlertDialog object and return it
+			return builder.create();
+		}
+	}
+
+	public class PickCarFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the Builder class for convenient dialog construction
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			// Get the layout inflater
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			// Inflate and set the layout for the dialog
+			// Pass null as the parent view because its going in the dialog layout
+			final View view = inflater.inflate(R.layout.dialog_pick_car, null);
+
+			final ImageView car_scion = (ImageView) view.findViewById(R.id.car_scion);
+			final ImageView car_subaru = (ImageView) view.findViewById(R.id.car_subaru);
+
+			car_scion.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					prefs.edit().putString("carIcon", "scion").commit();
+					carMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+					getDialog().dismiss();
+				}
+			});
+
+			car_subaru.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					prefs.edit().putString("carIcon", "subaru").commit();
+					carMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.subaru));
+					getDialog().dismiss();
+				}
+			});
+
+			builder.setView(view);
 			// Create the AlertDialog object and return it
 			return builder.create();
 		}
